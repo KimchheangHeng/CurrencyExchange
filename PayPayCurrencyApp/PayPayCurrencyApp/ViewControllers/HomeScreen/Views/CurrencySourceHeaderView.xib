@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CurrencySourceHeaderView" customModule="PayPayCurrencyApp" customModuleProvider="target">
+            <connections>
+                <outlet property="amountTextField" destination="lFI-sG-Z5e" id="eLI-xJ-hwQ"/>
+                <outlet property="backgroundGradient" destination="pkl-v9-A4A" id="R1q-MO-rMG"/>
+                <outlet property="currecnyFlagImageView" destination="FfF-dD-UK9" id="3Iw-gi-mOI"/>
+                <outlet property="currencyContainerView" destination="yQz-ei-IL6" id="dCE-E8-AUT"/>
+                <outlet property="shadowedView" destination="9nc-9M-vQk" id="4IY-vh-Obm"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clipsSubviews="YES" contentMode="scaleToFill" id="Xjk-Qv-Wmf">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="157"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pkl-v9-A4A" customClass="View" customModule="PayPayCurrencyApp" customModuleProvider="target">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="200"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="200" id="ptu-a6-Q9D"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="color" keyPath="startColor">
+                            <color key="value" name="gradientStart"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="color" keyPath="endColor">
+                            <color key="value" name="gradientEnd"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isVerticalGradient" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </view>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9nc-9M-vQk" customClass="View" customModule="PayPayCurrencyApp" customModuleProvider="target">
+                    <rect key="frame" x="16" y="91" width="382" height="50"/>
+                    <subviews>
+                        <view contentMode="scaleToFill" horizontalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yQz-ei-IL6">
+                            <rect key="frame" x="0.0" y="0.0" width="96" height="50"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nhf-Cq-TnM">
+                                    <rect key="frame" x="95" y="7.5" width="1" height="35"/>
+                                    <color key="backgroundColor" systemColor="systemGray4Color"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="1" id="WJA-za-fTi"/>
+                                    </constraints>
+                                </view>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" image="icFlag" translatesAutoresizingMaskIntoConstraints="NO" id="FfF-dD-UK9">
+                                    <rect key="frame" x="12" y="8" width="51" height="34"/>
+                                    <color key="backgroundColor" systemColor="systemGray6Color"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="FfF-dD-UK9" secondAttribute="height" multiplier="3:2" id="18X-wd-XXe"/>
+                                    </constraints>
+                                </imageView>
+                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrowtriangle.down.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="VUk-Vb-KZV">
+                                    <rect key="frame" x="75" y="22" width="10" height="6"/>
+                                    <color key="tintColor" name="gradientEnd"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="VUk-Vb-KZV" secondAttribute="height" id="lLQ-zn-3O6"/>
+                                        <constraint firstAttribute="height" constant="10" id="udI-gh-Rle"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstItem="Nhf-Cq-TnM" firstAttribute="height" secondItem="yQz-ei-IL6" secondAttribute="height" multiplier="0.7" id="57H-hy-mIc"/>
+                                <constraint firstAttribute="trailing" secondItem="VUk-Vb-KZV" secondAttribute="trailing" constant="11" id="7xA-WN-HRb"/>
+                                <constraint firstItem="VUk-Vb-KZV" firstAttribute="centerY" secondItem="yQz-ei-IL6" secondAttribute="centerY" id="OmE-Ny-394"/>
+                                <constraint firstItem="FfF-dD-UK9" firstAttribute="centerY" secondItem="yQz-ei-IL6" secondAttribute="centerY" id="UOr-Mz-adG"/>
+                                <constraint firstItem="Nhf-Cq-TnM" firstAttribute="centerY" secondItem="yQz-ei-IL6" secondAttribute="centerY" id="Wke-Wl-Qtq"/>
+                                <constraint firstItem="VUk-Vb-KZV" firstAttribute="leading" secondItem="FfF-dD-UK9" secondAttribute="trailing" constant="12" id="cAG-6S-60A"/>
+                                <constraint firstItem="FfF-dD-UK9" firstAttribute="top" secondItem="yQz-ei-IL6" secondAttribute="top" constant="8" id="f1e-Nj-1y9"/>
+                                <constraint firstItem="FfF-dD-UK9" firstAttribute="leading" secondItem="yQz-ei-IL6" secondAttribute="leading" constant="12" id="hWY-3R-XNh"/>
+                                <constraint firstAttribute="trailing" secondItem="Nhf-Cq-TnM" secondAttribute="trailing" id="pCw-hG-Gqi"/>
+                            </constraints>
+                        </view>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="100,000,000,000,000.00" placeholder="1.00" textAlignment="right" clearsOnBeginEditing="YES" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="lFI-sG-Z5e">
+                            <rect key="frame" x="104" y="4" width="270" height="42"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                            <textInputTraits key="textInputTraits" keyboardType="numberPad" returnKeyType="done"/>
+                            <connections>
+                                <action selector="amountTextFiedValueChanged:" destination="-1" eventType="editingChanged" id="v8q-ne-PEb"/>
+                            </connections>
+                        </textField>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="lFI-sG-Z5e" secondAttribute="bottom" constant="4" id="Bsz-2P-MeE"/>
+                        <constraint firstItem="lFI-sG-Z5e" firstAttribute="top" secondItem="9nc-9M-vQk" secondAttribute="top" constant="4" id="FXg-7g-uM4"/>
+                        <constraint firstItem="yQz-ei-IL6" firstAttribute="leading" secondItem="9nc-9M-vQk" secondAttribute="leading" id="Iqz-O1-P3K"/>
+                        <constraint firstAttribute="height" constant="50" id="NQl-A2-pkB"/>
+                        <constraint firstAttribute="trailing" secondItem="lFI-sG-Z5e" secondAttribute="trailing" constant="8" id="S6F-eu-e18"/>
+                        <constraint firstItem="yQz-ei-IL6" firstAttribute="top" secondItem="9nc-9M-vQk" secondAttribute="top" id="cN6-De-RM8"/>
+                        <constraint firstAttribute="bottom" secondItem="yQz-ei-IL6" secondAttribute="bottom" id="sBp-L5-DbG"/>
+                        <constraint firstItem="lFI-sG-Z5e" firstAttribute="leading" secondItem="yQz-ei-IL6" secondAttribute="trailing" constant="8" id="uff-ZC-PiD"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                            <real key="value" value="5"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="9nc-9M-vQk" secondAttribute="trailing" constant="16" id="9Le-8k-xfW"/>
+                <constraint firstAttribute="trailing" secondItem="pkl-v9-A4A" secondAttribute="trailing" id="Np6-Yf-k6S"/>
+                <constraint firstItem="pkl-v9-A4A" firstAttribute="leading" secondItem="Xjk-Qv-Wmf" secondAttribute="leading" id="QiL-RA-jas"/>
+                <constraint firstAttribute="bottom" secondItem="9nc-9M-vQk" secondAttribute="bottom" constant="16" id="Vd7-TA-3kw"/>
+                <constraint firstItem="9nc-9M-vQk" firstAttribute="leading" secondItem="Xjk-Qv-Wmf" secondAttribute="leading" constant="16" id="ags-yN-aap"/>
+                <constraint firstItem="pkl-v9-A4A" firstAttribute="top" secondItem="Xjk-Qv-Wmf" secondAttribute="top" id="nCn-i2-xiQ"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="137.68115942028987" y="197.87946428571428"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="arrowtriangle.down.fill" catalog="system" width="128" height="124"/>
+        <image name="icFlag" width="384" height="384"/>
+        <namedColor name="gradientEnd">
+            <color red="0.94900000095367432" green="0.31000000238418579" blue="0.31000000238418579" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="gradientStart">
+            <color red="0.78700000047683716" green="0.45399999618530273" blue="0.33799999952316284" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray4Color">
+            <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGray6Color">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
