@@ -37,12 +37,9 @@ class CurrenciesListViewModel: CurrenciesListPresentable {
                 return
             }
             
-            var currencies = [CurrencyViewModel]()
-            currenciesList?.currencies.keys.forEach { key in
-                let name = currenciesList?.currencies[key] ?? ""
-                currencies.append(CurrencyViewModel(code: key, name: name))
-            }
-            self.currenciesList = currencies
+            self.currenciesList = currenciesList?.currencies.map {
+                CurrencyViewModel(code: $0, name: $1)
+            } ?? []
         
             self.dataManager.fetchCurrenciesExchangeRates { exchangeRates, error  in
                 if let error = error {

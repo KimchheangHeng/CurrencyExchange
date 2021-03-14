@@ -21,11 +21,11 @@ struct NetworkManager: NetworkManagerType {
     
     // MARK: - NetworkManagerType
     func fetchCurrenciesExchangeRates(completion: @escaping Response<ExchangeRates>) {
-        currencyExchangeRouter.request(target: CurrencyExchangeAPI.currencyExchangeRates, completion: completion)
+        currencyExchangeRouter.request(target: .currencyExchangeRates, completion: completion)
     }
     
     func fetchCurrenciesList(completion: @escaping Response<CurrenciesList>) {
-        currencyExchangeRouter.request(target: CurrencyExchangeAPI.currenciesList, completion: completion)
+        currencyExchangeRouter.request(target: .currenciesList, completion: completion)
     }
 }
 
