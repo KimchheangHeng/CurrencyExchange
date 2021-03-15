@@ -7,6 +7,8 @@
 
 import Quick
 import Nimble
+import RxSwift
+import RxCocoa
 import Swinject
 @testable import PayPayCurrencyApp
 
@@ -14,6 +16,7 @@ class CurrenciesListViewModelTest: QuickSpec {
     
     override func spec() {
         var container: Container!
+        let disposeBag = DisposeBag()
         
         beforeEach {
             container = Container()
@@ -34,10 +37,17 @@ class CurrenciesListViewModelTest: QuickSpec {
         
         it("starts fetching currency exchange rates") {
             let viewModel = container.resolve(CurrenciesListViewModel.self)
+            viewModel?.loadInitialData()
             
-            viewModel?.performRequestExchangeRates(completedWithError: { error in
+            let input = CurrenciesListViewModel.Input()
+            
+            // MARK: Outputs
+            let output = viewModel?.transform(input: input)
+            
+            // Error message
+            output?.error.drive(onNext: { error in
                 expect(error).to(beNil())
-            })
+            }).disposed(by: disposeBag)
         }
     }
 }

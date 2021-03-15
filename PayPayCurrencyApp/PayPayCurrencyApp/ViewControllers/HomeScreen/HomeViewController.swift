@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 protocol HomeViewControllerDelegate: class {
-    func didSelectChangeCurrency(viewModel: CurrenciesListPresentable)
+    func didSelectChangeCurrency(viewModel: CurrenciesListViewModel)
     func showErrorMessage(for error: Error)
 }
 
@@ -21,6 +23,8 @@ class HomeViewController: BaseViewController {
     weak var delegate: HomeViewControllerDelegate?
     private var viewModel: CurrenciesListViewModel!
     
+    private let disposeBag = DisposeBag()
+    
     convenience init(viewModel: CurrenciesListViewModel) {
         self.init()
         self.viewModel = viewModel
@@ -31,12 +35,13 @@ class HomeViewController: BaseViewController {
         super.viewDidLoad()
         setupTableView()
         setupHeaderView()
+        bindViewModel()
+        viewModel.loadInitialData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
-        handleTableViewDidPullToRefresh(refreshControl)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -50,56 +55,79 @@ class HomeViewController: BaseViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-        
         tableView.allowsSelection = false
-        tableView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self,
-                                   action: #selector(handleTableViewDidTap(_:)))
-        )
         
-        tableView.refreshControl?.addTarget(
-            self, action: #selector(handleTableViewDidPullToRefresh(_:)), for: .valueChanged)
+        let tapGesture = UITapGestureRecognizer()
+        tapGesture.rx.event.bind(onNext: { [unowned self] recognizer in
+            self.view.endEditing(true)
+        }).disposed(by: disposeBag)
+        
+        tableView.addGestureRecognizer(tapGesture)
     }
     
     private func setupHeaderView() {
         let headerFrame = CGRect(x: 0, y: 0, width: view.frame.width, height: headerViewMaxHeight)
         headerView = CurrencySourceHeaderView(frame: headerFrame)
-        headerView.delegate = self
-        updateHeaderView()
+        
+        let tapGesture = UITapGestureRecognizer()
+        tapGesture.rx.event
+            .asDriver()
+            .drive(onNext: { [unowned self] _ in
+                self.delegate?.didSelectChangeCurrency(viewModel: viewModel)
+            })
+            .disposed(by: disposeBag)
+        headerView.currencyContainerView.addGestureRecognizer(tapGesture)
         
         view.addSubview(headerView)
         view.bringSubviewToFront(headerView)
         tableView.contentInset = UIEdgeInsets(top: headerViewMaxHeight + 8, left: 0, bottom: 8, right: 0)
     }
     
-    private func updateHeaderView() {
-        headerView.configView(with: viewModel.selectedCurrency, amount: viewModel.inputAmount)
-        headerView.layoutSubviews()
-    }
-    
-    private func updateData() {
-        self.tableView.reloadData()
-        self.updateHeaderView()
-    }
-    
-    // MARK: - Action
-    @objc
-    func handleTableViewDidTap(_ gesture: UIGestureRecognizer) {
-        view.endEditing(true)
-    }
-    
-    @objc
-    func handleTableViewDidPullToRefresh(_ refreshControl: UIRefreshControl) {
-        viewModel?.performRequestExchangeRates { [weak self] error in
-            guard let `self` = self else { return }
-            refreshControl.endRefreshing()
-            
-            if let error = error {
-                self.delegate?.showErrorMessage(for: error)
-            }
-            
-            self.updateData()
-        }
+    private func bindViewModel() {
+        // MARK: - Inputs
+        let fetchCurrenciesTrigger = refreshControl.rx.controlEvent(UIControl.Event.valueChanged).asDriver()
+        let inputAmount = headerView.inputAmount.asDriver()
+        let input = CurrenciesListViewModel.Input(inputAmount: inputAmount, fetchCurrenciesTrigger: fetchCurrenciesTrigger)
+        
+        // MARK: Outputs
+        let output = viewModel.transform(input: input)
+        
+        output.isLoading
+            .drive(refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
+        // Amount
+        output.sourceAmount
+            .drive(headerView.inputAmount)
+            .disposed(by: disposeBag)
+        
+        output.sourceAmount
+            .drive(onNext: { [unowned self] list in
+                self.tableView.reloadData()
+            }).disposed(by: disposeBag)
+        
+        // Currency
+        output.sourceCurrency
+            .drive(headerView.selectedCurrency)
+            .disposed(by: disposeBag)
+        
+        output.sourceCurrency
+            .drive(onNext: { [unowned self] _ in
+                self.tableView.reloadData()
+            }).disposed(by: disposeBag)
+        
+        // Error message
+        output.error.drive(onNext: { error in
+            guard let error = error else { return }
+            self.delegate?.showErrorMessage(for: error)
+        }).disposed(by: disposeBag)
+        
+        // Currencies List
+        output.currenciesList
+            .drive(onNext: { [unowned self] _ in
+                self.tableView.reloadData()
+            }).disposed(by: disposeBag)
+        
     }
 }
 
@@ -115,7 +143,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         
         let currency = viewModel.allCurrenciesList[indexPath.row]
         let selected = viewModel.selectedCurrency
-        let amount = viewModel.inputAmount
+        let amount = headerView.inputAmount.value
         cell.configView(with: currency, currencySource: selected, amount: amount)
         
         return cell
@@ -136,27 +164,5 @@ extension HomeViewController {
         guard headerView != nil else { return }
         headerView.frame = newFrame
         headerView.layoutSubviews()
-    }
-}
-
-// MARK: - CurrencySourceHeaderDelegate
-extension HomeViewController: CurrencySourceHeaderDelegate {
-    
-    func selectCurrencyDidClick() {
-        delegate?.didSelectChangeCurrency(viewModel: viewModel)
-    }
-    
-    func amountTextFieldDidChange(_ amount: Double) {
-        viewModel.inputAmount = amount
-        tableView.reloadData()
-    }
-}
-
-// MARK: - SelectCurrencyFlowDeletate
-extension HomeViewController: SelectCurrencyFlowDeletate {
-    
-    func currencyDidSelect(_ currency: CurrencyViewModel) {
-        viewModel.selectedCurrency = currency
-        updateData()
     }
 }

@@ -6,26 +6,29 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class SelectCurrencyViewController: BaseViewController {
     
-    var viewModel: CurrenciesListPresentable!
+    var viewModel: CurrenciesListViewModel!
     var coordinator: SelectCurrencyCoordinator!
+    
+    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTableView()
         setupNavigationBar()
+        setupTableView()
+        bindViewModel()
     }
     
     // MARK: - Setup UI
     private func setupTableView() {
         CurrencyCell.registerNibCell(tableView)
         
-        tableView.delegate = self
         tableView.dataSource = self
-        
         tableView.refreshControl = nil
         tableView.allowsSelection = true
         tableView.separatorStyle = .singleLine
@@ -39,22 +42,36 @@ class SelectCurrencyViewController: BaseViewController {
     private func setupNavigationBar() {
         title = "Select your currency"
         navigationController?.navigationBar.tintColor = UIColor(of: .primary)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(cancelButtonDidClick(_:))
-        )
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: nil, action: nil)
+        navigationItem.leftBarButtonItem?.rx.tap.asDriver()
+            .drive(onNext: { [unowned self] in
+                self.coordinator.dismiss()
+            })
+            .disposed(by: disposeBag)
     }
     
-    // MARK: - Actions
-    @objc
-    func cancelButtonDidClick(_ sender: UIBarButtonItem) {
-        navigationController?.dismiss(animated: true, completion: { })
+    private func bindViewModel() {
+        // MARK: - Inputs
+        let selectedCurrencies = tableView.rx.itemSelected
+            .map({ [unowned self] indexPath in
+                return self.viewModel.allCurrenciesList[indexPath.row]
+            })
+            .asDriver(onErrorJustReturn: viewModel.selectedCurrency)
+        
+        let input = CurrenciesListViewModel.Input(selectedCurrencies: selectedCurrencies)
+        
+        // MARK: Outputs
+        _ = viewModel.transform(input: input)
+        
+        selectedCurrencies.drive(onNext: { [unowned self] _ in
+            self.coordinator.dismiss()
+        }).disposed(by: disposeBag)
+        
     }
 }
 
-// MARK: - UITableViewDelegate & UITableViewDataSource
-extension SelectCurrencyViewController: UITableViewDelegate, UITableViewDataSource {
+// MARK: - UITableViewDataSource
+extension SelectCurrencyViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.allCurrenciesList.count
@@ -65,10 +82,5 @@ extension SelectCurrencyViewController: UITableViewDelegate, UITableViewDataSour
         let currency = viewModel.allCurrenciesList[indexPath.row]
         cell.configView(with: currency)
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        navigationController?.dismiss(animated: true, completion: { })
-        coordinator.selectCurrencyFlow?.currencyDidSelect(viewModel.allCurrenciesList[indexPath.row])
     }
 }

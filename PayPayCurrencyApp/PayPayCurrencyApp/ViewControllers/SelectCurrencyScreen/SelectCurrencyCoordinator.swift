@@ -7,15 +7,10 @@
 
 import UIKit
 
-protocol SelectCurrencyFlowDeletate: class {
-    func currencyDidSelect(_ currency: CurrencyViewModel)
-}
-
 class SelectCurrencyCoordinator: CoordinatorType {
     
     let navigationController: UINavigationController
-    let viewModel: CurrenciesListPresentable!
-    weak var selectCurrencyFlow: SelectCurrencyFlowDeletate?
+    let viewModel: CurrenciesListViewModel!
     
     func start() {
         let viewController = SelectCurrencyViewController()
@@ -26,8 +21,12 @@ class SelectCurrencyCoordinator: CoordinatorType {
         navigationController.present(navigationVC, animated: true, completion: { })
     }
     
-    init(navigationController: UINavigationController, viewModel: CurrenciesListPresentable) {
+    init(navigationController: UINavigationController, viewModel: CurrenciesListViewModel) {
         self.navigationController = navigationController
         self.viewModel = viewModel
+    }
+    
+    func dismiss() {
+        navigationController.dismiss(animated: true, completion: { })
     }
 }

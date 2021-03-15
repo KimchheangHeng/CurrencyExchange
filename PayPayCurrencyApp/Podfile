@@ -10,6 +10,8 @@ target 'PayPayCurrencyApp' do
   pod 'Moya'
   pod 'FlagKit'
   pod 'Swinject'
+  pod 'RxSwift'
+  pod 'RxCocoa'
   
   
   target 'PayPayCurrencyAppTests' do

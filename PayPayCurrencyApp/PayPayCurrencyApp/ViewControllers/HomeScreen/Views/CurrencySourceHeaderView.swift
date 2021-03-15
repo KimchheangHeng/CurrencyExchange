@@ -6,11 +6,8 @@
 //
 
 import UIKit
-
-protocol CurrencySourceHeaderDelegate: class {
-    func selectCurrencyDidClick()
-    func amountTextFieldDidChange(_ amount: Double)
-}
+import RxSwift
+import RxCocoa
 
 class CurrencySourceHeaderView: View {
     
@@ -22,8 +19,13 @@ class CurrencySourceHeaderView: View {
     
     @IBOutlet weak var amountTextField: UITextField!
     
-    weak var delegate: CurrencySourceHeaderDelegate?
     private var defaultTextFieldValue = "1.00"
+    private let disposeBag = DisposeBag()
+    
+    var inputAmount = BehaviorRelay<Double>(value: 1.0)
+    var selectedCurrency = BehaviorRelay<CurrencyViewModel>(
+        value: CurrencyViewModel(code: "USD", name: "United State Dollar")
+    )
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -43,55 +45,43 @@ class CurrencySourceHeaderView: View {
         self.backgroundGradient.startColor = UIColor(of: .gradientStart)!
         self.backgroundGradient.endColor = UIColor(of: .gradientEnd)!
         self.backgroundGradient.isVerticalGradient = true
-        
         self.shadowedView.setShadowBorder(color: UIColor(of: .shadow))
     }
     
     // MARK: - Setup UI
     private func setupView() {
-        currencyContainerView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self,
-                                   action: #selector(changeCurrencyDidTap(_:)))
-        )
+        amountTextField.rx.text
+            .asDriver()
+            .drive(onNext: { [unowned self] amountText in
+                self.inputAmount.accept(Double(amountText ?? defaultTextFieldValue) ?? 1.0)
+            })
+            .disposed(by: disposeBag)
         
-        amountTextField.delegate = self
-        amountTextField.text = defaultTextFieldValue
-    }
-    
-    func configView(with viewModel: CurrencyViewModel, amount: Double) {
-        currecnyFlagImageView.image = viewModel.flagImage
-        amountTextField.text = amount.decimalFormatted
-    }
-    
-    // MARK: - Actions
-    @objc
-    func changeCurrencyDidTap(_ gesture: UIGestureRecognizer) {
-        delegate?.selectCurrencyDidClick()
-    }
-    
-    @IBAction
-    func amountTextFiedValueChanged(_ textField: UITextField) {
-        let amountText = amountTextField.text ?? defaultTextFieldValue
-        guard let amount = Double(amountText) else { return }
-        delegate?.amountTextFieldDidChange(amount)
-    }
-}
-
-// MARK: - UITextFieldDelegate
-extension CurrencySourceHeaderView: UITextFieldDelegate {
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        let inputText = textField.text ?? ""
-        if inputText == "" {
-            textField.text = defaultTextFieldValue
-            guard let amount = Double(defaultTextFieldValue) else { return }
-            delegate?.amountTextFieldDidChange(amount)
-        }
+        // To take only the first value to show on textField
+        inputAmount.element(at: 0)
+            .map({ $0.decimalFormatted })
+            .subscribe(amountTextField.rx.text)
+            .disposed(by: disposeBag)
         
-        // This is optinoal, but just to make it look nice formatted when user end editing
-        if let amount = Double(textField.text ?? defaultTextFieldValue) {
-            textField.text = amount.decimalFormatted
-        }
+        amountTextField.rx.controlEvent([.editingDidEnd])
+            .asDriver()
+            .drive(onNext: { [unowned self] in
+                let inputText = self.amountTextField.text ?? ""
+                if inputText == "" {
+                    self.amountTextField.text = self.defaultTextFieldValue
+                }
+                
+                // This is optinoal, but just to make it look nice formatted when user end editing
+                if let amount = Double(inputText) {
+                    self.amountTextField.text = amount.decimalFormatted
+                }
+            })
+            .disposed(by: disposeBag)
         
+        selectedCurrency.asDriver()
+            .drive(onNext: { [unowned self] currency in
+                currecnyFlagImageView.image = currency.flagImage
+            })
+            .disposed(by: disposeBag)
     }
 }

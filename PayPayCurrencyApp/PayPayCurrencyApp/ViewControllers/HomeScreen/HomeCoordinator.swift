@@ -27,19 +27,13 @@ class HomeCoordinator: CoordinatorType {
         self.container = container
         self.navigationController = navigationController
     }
-    
-    deinit {
-        print("Deinit Home Coordinator")
-    }
 }
 
 // MARK: - HomeViewControllerDelegate
 extension HomeCoordinator: HomeViewControllerDelegate {
     
-    func didSelectChangeCurrency(viewModel: CurrenciesListPresentable) {
-        selectCurrencyCoordinator = SelectCurrencyCoordinator(navigationController: navigationController,
-                                                              viewModel: viewModel)
-        selectCurrencyCoordinator.selectCurrencyFlow = homeViewController
+    func didSelectChangeCurrency(viewModel: CurrenciesListViewModel) {
+        selectCurrencyCoordinator = SelectCurrencyCoordinator(navigationController: navigationController, viewModel: viewModel)
         coordinate(to: selectCurrencyCoordinator)
     }
     
